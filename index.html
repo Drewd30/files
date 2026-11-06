@@ -3,7 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mastery Blitz</title>
+<title>Star Student Blitz</title>
+<meta name="theme-color" content="#ffe043">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Star Student Blitz">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon-180.png">
+<link rel="icon" sizes="192x192" type="image/png" href="./icons/icon-192.png">
+<link rel="icon" href="./favicon.ico" sizes="any">
 <style>
 :root{--bg:#fff;--surface:#fff;--ink:#111827;--muted:#475569;--label:#64748b;--line:#111827;--shadow:#111827;--yellow:#ffe043;--on-y:#111827;--good:#15803d;--good-bg:#ecfdf5;--good-line:#16a34a;--bad:#b91c1c;--bad-bg:#fee2e2;--warn-bg:#fef3c7;--warn:#92400e;--warn-line:#d97706;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1220;--surface:#131c2e;--ink:#f1f5f9;--muted:#cbd5e1;--label:#94a3b8;--line:#e2e8f0;--shadow:#e2e8f0;--good:#4ade80;--good-bg:#052e1b;--good-line:#22c55e;--bad:#fca5a5;--bad-bg:#450a0a;--warn-bg:#422006;--warn:#fcd34d;--warn-line:#f59e0b}}
@@ -14,6 +23,8 @@ body{background:var(--bg);color:var(--ink);font:16px/1.4 "Segoe UI",system-ui,-a
 main{max-width:640px;margin:0 auto;padding:1.5rem 1.1rem 3rem}
 [hidden]{display:none!important}
 h1{font-size:clamp(2rem,8vw,2.9rem);font-weight:900;letter-spacing:-.03em;text-align:center;margin:.2rem 0 .3rem}
+.brand{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.6rem}
+.brand img{width:52px;height:52px;object-fit:cover;border:2.5px solid var(--line);border-radius:14px;flex:none}
 .sub{text-align:center;color:var(--muted);font-size:1.1rem;margin:0 0 1.4rem}
 .lbl{color:var(--label);font-weight:800;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;margin:1.4rem 0 .6rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem}
 .lbl .mini{display:flex;gap:.9rem}
@@ -74,7 +85,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 .miss span{color:var(--muted);font-weight:700}.miss span b{color:var(--good);font-size:1.05rem}.miss span small{color:var(--bad);font-weight:600;font-size:.85rem}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.4rem}
 .two .btn{border-radius:1rem;padding:.9rem}
-.rv{text-transform:none;letter-spacing:0;font-size:.8rem;font-weight:700}.rv.on{background:var(--yellow);color:var(--on-y);border:2px solid var(--line);border-radius:999px;padding:.1rem .65rem}
+.review-toggle{font-size:.84rem;letter-spacing:0;text-transform:none;padding:.4rem .8rem;white-space:nowrap}
+.review-hint{margin:-.1rem 0 .8rem!important}
+.review-toggle[aria-pressed="true"]{background:var(--yellow);color:var(--on-y)}
+.peek-close{border:2px solid var(--line);background:var(--surface);color:var(--ink);border-radius:.65rem;min-width:38px;min-height:38px;font-size:1.3rem;font-weight:900;line-height:1;flex:none}
+.peek h3{align-items:center}
+.peek h3 .peek-heading{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
+@media (hover:none), (max-width:650px){.peek{left:12px!important;top:auto!important;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:auto;max-height:min(70vh,550px)}}
 .peek{position:fixed;z-index:15;width:min(440px,calc(100vw - 24px));max-height:min(60vh,420px);overflow-y:auto;border:2.5px solid var(--line);border-radius:1.1rem;background:var(--surface);box-shadow:5px 5px 0 var(--shadow);padding:.8rem .9rem}
 .peek h3{margin:0 0 .5rem;font-size:1rem;font-weight:900;display:flex;justify-content:space-between;gap:1rem}.peek h3 span{color:var(--label);font-weight:700;font-size:.85rem}
 .peek ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.3rem .9rem}
@@ -93,12 +110,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 <main>
 
 <section id="setup">
-  <h1>⚡ Mastery Blitz</h1>
+  <h1 class="brand"><img src="./icons/apple-touch-icon-180.png" alt="" width="52" height="52"><span>⭐ Star Student Blitz</span></h1>
   <p class="sub" id="sub"></p>
   <div class="best"><span id="bestLbl">Best:</span><b id="bestPts">—</b></div>
   <p class="bestsub" id="bestSub"></p>
 
-  <div class="lbl"><span>Lessons</span><span class="rv" id="rvHint"></span></div>
+  <div class="lbl"><span>Lessons</span><button class="chip review-toggle" id="reviewBtn" type="button" aria-pressed="false" aria-controls="peek">📖 Review: OFF</button></div>
+  <p class="bestsub review-hint" id="rvHint" role="status"></p>
   <div id="chips"></div>
 
   <div class="lbl"><span>Round &amp; audio</span></div>
@@ -131,7 +149,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 </section>
 
 </main>
-<div class="peek" id="peek" hidden role="tooltip"></div>
+<div class="peek" id="peek" hidden role="dialog" aria-label="Lesson word review"></div>
 <div class="ov" id="pause" hidden role="dialog" aria-modal="true" aria-label="Paused">
   <div class="pm"><h2>⏸ Paused</h2><p>The timer is stopped.</p>
     <button class="btn y" id="resume">▶ Resume</button>
@@ -2445,34 +2463,56 @@ function renderSetup(){
 $('#chips').onclick=e=>{
   const a=e.target.closest('[data-act]');
   if(a){const ks=PARTS[+a.dataset.p][1];S.sel=a.dataset.act==='all'?[...new Set([...S.sel,...ks])]:S.sel.filter(k=>!ks.includes(k));save();renderSetup();return}
-  const c=e.target.closest('[data-k]');if(!c)return;const k=c.dataset.k;S.sel=S.sel.includes(k)?S.sel.filter(x=>x!==k):[...S.sel,k];save();renderSetup()};
+  const c=e.target.closest('[data-k]');if(!c)return;
+  if(review){showPeek(c);return}
+  const k=c.dataset.k;S.sel=S.sel.includes(k)?S.sel.filter(x=>x!==k):[...S.sel,k];save();renderSetup()};
 $('#modes').onclick=e=>{const c=e.target.closest('[data-m]');if(!c)return;S.mode=c.dataset.m;save();renderSetup()};
 $('#snd').onclick=()=>{S.sound=!S.sound;save();renderSetup()};
 $('#reset').onclick=()=>{if(confirm('Erase ALL personal bests and round history on this device?')){S.best={};S.hist=[];save();renderSetup()}};
 
-/* review peek: press R on the main page to toggle, then hover a lesson */
+/* Review mode: use the button or R, then hover (desktop) or tap (touch) a lesson. */
 let review=false,peekT=null;
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function renderReviewHint(){const el=$('#rvHint');el.classList.toggle('on',review);el.textContent=review?'Review ON · hover a lesson · R to turn off':'Press R to preview words'}
+function renderReviewHint(){
+  const btn=$('#reviewBtn');
+  btn.textContent=review?'📖 Review: ON':'📖 Review: OFF';
+  btn.setAttribute('aria-pressed',String(review));
+  $('#rvHint').textContent=review?'Review is on: tap a lesson to preview words. Tap Review again to select lessons. (R also works)':'Tap Review to preview any lesson’s words, or press R.';
+}
+function toggleReview(){review=!review;renderReviewHint();hidePeek()}
+$('#reviewBtn').onclick=toggleReview;
 function showPeek(chip){
-  if(!review||$('#setup').hidden)return;clearTimeout(peekT);
+  if(!review||$('#setup').hidden)return;
+  clearTimeout(peekT);
   const k=chip.dataset.k,list=D[k]||[],pk=$('#peek');
-  pk.innerHTML=`<h3>Lesson ${esc(lk(k))} <span>${list.length} words</span></h3><ul>${list.map(p=>`<li><span class="kanji" lang="ja">${esc(p[0])}</span><span>${esc(p[1])}</span></li>`).join('')}</ul>`;
+  pk.innerHTML=`<h3><span class="peek-heading">Lesson ${esc(lk(k))} <span>${list.length} words</span></span><button type="button" class="peek-close" aria-label="Close lesson review" title="Close">×</button></h3><ul>${list.map(p=>`<li><span class="kanji" lang="ja">${esc(p[0])}</span><span>${esc(p[1])}</span></li>`).join('')}</ul>`;
   pk.hidden=false;pk.scrollTop=0;
   const r=chip.getBoundingClientRect(),w=pk.offsetWidth,h=pk.offsetHeight;
-  let top=r.bottom+6;if(top+h>innerHeight-12)top=Math.max(12,r.top-h-6);
-  pk.style.left=Math.min(Math.max(12,r.left),Math.max(12,innerWidth-w-12))+'px';pk.style.top=top+'px';
+  let left=Math.min(Math.max(12,r.left),Math.max(12,innerWidth-w-12));
+  let top=r.bottom+8;
+  // Prefer a side placement on desktop so the popup never covers the chip being hovered.
+  if(canHover()&&r.right+w+20<innerWidth){left=r.right+10;top=Math.max(12,Math.min(r.top,innerHeight-h-12))}
+  else if(canHover()&&r.left-w-20>0){left=r.left-w-10;top=Math.max(12,Math.min(r.top,innerHeight-h-12))}
+  else if(top+h>innerHeight-12){top=Math.max(12,r.top-h-8)}
+  pk.style.left=left+'px';pk.style.top=top+'px';
 }
 function hidePeek(){clearTimeout(peekT);const pk=$('#peek');if(pk)pk.hidden=true}
 const hideSoon=()=>{clearTimeout(peekT);peekT=setTimeout(hidePeek,220)};
-$('#chips').addEventListener('mouseover',e=>{const c=e.target.closest('[data-k]');if(c)showPeek(c)});
-$('#chips').addEventListener('mouseout',e=>{if(e.target.closest('[data-k]'))hideSoon()});
+const canHover=()=>window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+$('#chips').addEventListener('mouseover',e=>{if(!canHover())return;const c=e.target.closest('[data-k]');if(c)showPeek(c)});
+$('#chips').addEventListener('mouseout',e=>{if(canHover()&&e.target.closest('[data-k]'))hideSoon()});
 $('#chips').addEventListener('focusin',e=>{const c=e.target.closest('[data-k]');if(c)showPeek(c)});
 $('#chips').addEventListener('focusout',hideSoon);
+$('#peek').addEventListener('click',e=>{if(e.target.closest('.peek-close'))hidePeek()});
 $('#peek').addEventListener('mouseenter',()=>clearTimeout(peekT));
-$('#peek').addEventListener('mouseleave',hideSoon);
+$('#peek').addEventListener('mouseleave',()=>{if(canHover())hideSoon()});
+document.addEventListener('pointerdown',e=>{
+  if(!$('#peek').hidden&&!e.target.closest('#peek')&&!e.target.closest('#chips [data-k]'))hidePeek();
+});
 document.addEventListener('keydown',e=>{
-  if((e.key==='r'||e.key==='R')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!$('#setup').hidden){e.preventDefault();review=!review;renderReviewHint();if(!review)hidePeek()}
+  if($('#setup').hidden)return;
+  if((e.key==='r'||e.key==='R')&&!e.ctrlKey&&!e.metaKey&&!e.altKey){e.preventDefault();toggleReview()}
+  else if(e.key==='Escape'&&!$('#peek').hidden){e.preventDefault();hidePeek()}
 });
 
 /* round */
